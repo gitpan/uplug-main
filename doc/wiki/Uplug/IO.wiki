@@ -1,0 +1,15 @@
+
+== NAME ==
+
+Uplug::IO - libraries for handling various kinds of input/output
+
+
+== DESCRIPTION ==
+
+This is a virtual class declaring the main methods that can be called in from derived classes. The class factory Uplug::IO::Any can be used to create input and output streams for data sets in various formats.
+
+
+== See also ==
+
+Uplug::IO::Any
+
