@@ -21,7 +21,6 @@
 #
 #####################################################################
 
-=encoding utf-8
 
 =head1 NAME
 
@@ -82,7 +81,7 @@ This is a class factory for creating data streams of various kinds. Supported su
 package Uplug::IO::Any;
 
 use strict;
-use vars qw(@ISA $VERSION);
+use vars qw(@ISA);
 use vars qw($DefaultFormat);
 use FindBin qw($Bin);
 
@@ -105,7 +104,6 @@ use Uplug::IO::Storable;
 use Uplug::IO::MosesWordAlign;
 
 
-$VERSION='0.1';
 @ISA = qw( Uplug::IO );
 
 
