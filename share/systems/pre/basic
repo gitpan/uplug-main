@@ -2,9 +2,9 @@
   'module' => {
     'name' => 'basic pre-processing',
     'submodules' => [
-        'premarkup',
-        'present',
-        'pretok',
+        'pre/markup',
+        'pre/sent',
+        'pre/tok',
     ],
     'submodule names' => [
         'basic XML markup',

@@ -145,13 +145,13 @@ A Uplug module is specified by its configuration file. A config file is basicall
 Config files may include the following variables to refer to standard locations within the Uplug toolbox. They will be expanded when reading the configuration before executing the commands.
 
  $UplugHome ..... environment ($UPLUGHOME) or /path/to/uplug
- $UplugSystem ... environment ($UPLUGCONFIG) or /shared/systems
+ $UplugSystem ... environment ($UPLUGCONFIG) or /UPLUGSHARE/systems
  $UplugBin ...... /path/to/uplug/bin
- $UplugIni ...... /shared/ini
- $UplugLang ..... /shared/lang
+ $UplugIni ...... /UPLUGSHARE/ini
+ $UplugLang ..... /UPLUGSHARE/lang
  $UplugData ..... data
 
-C</shared/> is the path to the global shared directory (if Uplug is installed properly) or the path to the local directory C<share> in your local copy of Uplug (if you don't use the makefile to install Uplug globally)
+C</UPLUGSHARE/> is the path to the global shared directory (if Uplug is installed properly) or the path to the local directory C<share> in your local copy of Uplug (if you don't use the makefile to install Uplug globally). See further down for more information on environment variables and default locations in Uplug.
 
 Uplug modules may also point to a sequence of sub-modules. Add the following structures to the config-hash within the 'module' structure:
 
@@ -204,7 +204,7 @@ use strict;
 use vars qw(@ISA @EXPORT);
 use vars qw(%NamedIO);
 
-use FindBin qw/$Bin/;
+use FindBin qw/$Bin $Script/;
 # use File::ShareDir qw/dist_dir/;
 use Exporter qw/import/;
 use Data::Dumper;
@@ -234,18 +234,43 @@ our @EXPORT   = qw/FindConfig ReadConfig WriteConfig
  $OS_TYPE      # type of operating system     (uname -s)
  $MACHINE_TYPE # type of machine architecture (uname -m)
 
+C<$SHARED_HOME> is the global directory of shared files for Uplug (if properly installed) or the directory set in the environment variable UPLUGSHARE. 
+
+If you start a local copy of C<uplug> (not the globally installed one): Uplug tries to find local directories of shared files ('share') relative to the location of the startup script (C</path/to/script/share> or C</path/to/script/../share>) or relative to the environment variable UPLUGHOME (if set). Note that the environment variable UPLUGSHARE overwrites these settings again.
+
 =cut
 
 # try to find the shared files for Uplug
+# - the global Uplug shared files dir
+# - overwrite with UPLUGSHARE (if set in environment)
+# - take local Uplug 'share' folders if we start a local copy of uplug
+
+## local shared folder
+
+my $SHARED_LOCAL_HOME;
+$SHARED_LOCAL_HOME = $Bin.'/../share' if (-d  $Bin.'/../share');
+$SHARED_LOCAL_HOME = $Bin.'/share'    if (-d  $Bin.'/share');
+
+## global shared folder
 
 my $SHARED_HOME;
 eval{ 
     require File::ShareDir; 
     $SHARED_HOME = File::ShareDir::dist_dir('Uplug'); 
 };
-$SHARED_HOME = $ENV{UPLUGHOME}.'/share' unless (-d  $SHARED_HOME);
-$SHARED_HOME = $Bin.'/share'            unless (-d  $SHARED_HOME);
-$SHARED_HOME = $Bin.'/../share'         unless (-d  $SHARED_HOME);
+unless (-d $SHARED_HOME){
+    if ((defined $ENV{UPLUGHOME}) && (-d $ENV{UPLUGHOME}.'/share')){
+	$SHARED_HOME = $ENV{UPLUGHOME}.'/share';
+    }
+}
+if ((defined $ENV{UPLUGSHARE}) && (-d $ENV{UPLUGSHARE})){
+    $SHARED_HOME = $ENV{UPLUGSHARE};
+}
+$SHARED_HOME = $SHARED_LOCAL_HOME unless (-d $SHARED_HOME);
+
+
+
+## other global locations
 
 our $SHARED_BIN  = $SHARED_HOME . '/bin';
 our $SHARED_INI  = $SHARED_HOME . '/ini';
@@ -258,6 +283,15 @@ our $MACHINE_TYPE = $ENV{MACHINE_TYPE} || `uname -m`;
 
 chomp($OS_TYPE);
 chomp($MACHINE_TYPE);
+
+
+## local files
+
+my $SHARED_LOCAL_BIN  = $SHARED_LOCAL_HOME . '/bin';
+my $SHARED_LOCAL_INI  = $SHARED_LOCAL_HOME . '/ini';
+my $SHARED_LOCAL_LANG = $SHARED_LOCAL_HOME . '/lang';
+my $SHARED_LOCAL_LIB  = $SHARED_LOCAL_HOME . '/lib';
+my $SHARED_LOCAL_SYS  = $SHARED_LOCAL_HOME . '/systems';
 
 
 =head1 Pre-defined data streams
@@ -305,7 +339,13 @@ sub find_executable{
   chomp($path);
   return $path if (-e $path);
 
-  # try to find it in the shared tools dir
+  # try to find it in the shared tools dir (local and global)
+
+  return join('/',$SHARED_LOCAL_BIN,$OS_TYPE,$MACHINE_TYPE,$name) 
+      if (-e join('/',$SHARED_LOCAL_BIN,$OS_TYPE,$MACHINE_TYPE,$name) );
+  return join('/',$SHARED_LOCAL_BIN,$OS_TYPE,$name) 
+      if (-e join('/',$SHARED_LOCAL_BIN,$OS_TYPE,$name) );
+  return $SHARED_LOCAL_BIN.'/'.$name if (-e $SHARED_LOCAL_BIN.'/'.$name);
 
   return join('/',$SHARED_BIN,$OS_TYPE,$MACHINE_TYPE,$name) 
       if (-e join('/',$SHARED_BIN,$OS_TYPE,$MACHINE_TYPE,$name) );
@@ -386,25 +426,42 @@ Look for the physical configuration file for a given module. This function check
 sub FindConfig{
     my $file=shift;
 
-    if (! -f $file){
-	if (-f "$SHARED_SYS/$file"){
-	    $file = "$SHARED_SYS/$file";
-	}
-	elsif (-f "$SHARED_INI/$file"){
-	    $file = "$SHARED_INI/$file";
-	}
-	elsif (-f "$ENV{UPLUGHOME}/$file"){
-	    $file = "$ENV{UPLUGHOME}/$file";
-	}
-	elsif (-f "$ENV{UPLUGHOME}/systems/$file"){
-	    $file = "$ENV{UPLUGHOME}/systems/$file";
-	}
-	elsif (-f "$ENV{UPLUGHOME}/ini/$file"){
-	    $file = "$ENV{UPLUGHOME}/ini/$file";
-	}
+    return $file if (-f $file);
+
+    ## take local files first
+
+    if (-f "$SHARED_LOCAL_SYS/$file"){
+	return "$SHARED_LOCAL_SYS/$file";
     }
+    elsif (-f "$SHARED_LOCAL_INI/$file"){
+	return "$SHARED_LOCAL_INI/$file";
+    }
+
+    ## look for global files
+
+    if (-f "$SHARED_SYS/$file"){
+	return "$SHARED_SYS/$file";
+    }
+    elsif (-f "$SHARED_INI/$file"){
+	return "$SHARED_INI/$file";
+    }
+    elsif ((defined $ENV{UPLUGHOME}) && 
+	   (-f "$ENV{UPLUGHOME}/$file")){
+	return "$ENV{UPLUGHOME}/$file";
+    }
+    elsif ((defined $ENV{UPLUGHOME}) && 
+	   (-f "$ENV{UPLUGHOME}/systems/$file")){
+	return "$ENV{UPLUGHOME}/systems/$file";
+    }
+    elsif ((defined $ENV{UPLUGHOME}) && 
+	   (-f "$ENV{UPLUGHOME}/ini/$file")){
+	return "$ENV{UPLUGHOME}/ini/$file";
+    }
+
+    print STDERR "cannot find file '$file'!\n";
     return $file;
 }
+
 
 =head2 C<ReadConfig>
 
@@ -690,10 +747,10 @@ sub ReadNamed{
 	elsif (-f $SHARED_HOME.'/ini/'.$file){
 	    $file=$SHARED_HOME.'/ini/'.$file;
 	}
-	elsif (-f $ENV{UPLUGHOME}.'/'.$file){
+	elsif ((defined $ENV{UPLUGHOME}) && (-f $ENV{UPLUGHOME}.'/'.$file)){
 	    $file=$ENV{UPLUGHOME}.'/'.$file;
 	}
-	elsif (-f $ENV{UPLUGHOME}.'/ini/'.$file){
+	elsif ((defined $ENV{UPLUGHOME}) && (-f $ENV{UPLUGHOME}.'/ini/'.$file)){
 	    $file=$ENV{UPLUGHOME}.'/ini/'.$file 
 	} 
     }

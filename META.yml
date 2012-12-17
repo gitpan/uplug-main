@@ -1,5 +1,7 @@
 ---
 abstract: 'a toolbox for processing (parallel) text corpora'
+author:
+  - 'Joerg Tiedemann'
 build_requires:
   ExtUtils::MakeMaker: 6.36
 configure_requires:
@@ -25,4 +27,4 @@ requires:
   perl: 5.005
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 0.3.3
+version: 0.3.4
