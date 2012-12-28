@@ -256,6 +256,7 @@ share/ext/grok/lib/grok-0.5.9.jar
 share/ext/grok/lib/LGPL
 share/ext/grok/lib/LIBNOTES
 share/ext/grok/lib/maxent.jar
+share/ext/grok/lib/META-INF/MANIFEST.MF
 share/ext/grok/lib/opennlp.jar
 share/ext/grok/lib/trove.jar
 share/ext/grok/LICENSE
@@ -2098,6 +2099,7 @@ t/data/txt/1988sv.txt
 t/data/xml/1988de.basic.xml
 t/data/xml/1988de.hunpos.xml
 t/data/xml/1988en.basic.xml
+t/data/xml/1988en.basic.xml.idx
 t/data/xml/1988en.chunk.xml
 t/data/xml/1988en.grok.xml
 t/data/xml/1988en.hunpos.xml
@@ -2106,6 +2108,7 @@ t/data/xml/1988en.sent.xml
 t/data/xml/1988en.tok.xml
 t/data/xml/1988fr.basic.xml
 t/data/xml/1988sv.basic.xml
+t/data/xml/1988sv.basic.xml.idx
 t/data/xml/1988sv.grok.xml
 t/data/xml/1988sv.hunpos.xml
 t/data/xml/de-en/1988.bisent.xml
@@ -2160,6 +2163,7 @@ tools/xces2moses
 tools/xces2poslink
 tools/xces2text
 tools/xces2tmx
+translate.txt
 uplug
 web/bin/bitext-indexer.pl
 web/bin/start-remote-servers.pl
