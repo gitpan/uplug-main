@@ -23,6 +23,7 @@ no_index:
 requires:
   AnyDBM_File: 0
   Cwd: 0
+  DB_File: 0
   Data::Dumper: 0
   Encode: 0
   Exporter: 0
@@ -33,6 +34,7 @@ requires:
   File::stat: 0
   FileHandle: 0
   FindBin: 0
+  GDBM_File: 0
   Getopt::Std: 0
   HTML::Entities: 0
   IO: 0
@@ -46,4 +48,4 @@ requires:
   perl: 5.005
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 0.3.5
+version: 0.3.6
