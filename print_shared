@@ -1,0 +1,3 @@
+    require File::ShareDir; 
+    print File::ShareDir::dist_dir('Uplug'); 
+
