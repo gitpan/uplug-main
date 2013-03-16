@@ -27,6 +27,12 @@ bin/uplug-wordalign
 CHANGES
 doc/index.pod
 doc/tiedemann2003.pdf
+doc/wiki/bin/uplug.wiki
+doc/wiki/Home.wiki
+doc/wiki/Uplug.wiki
+doc/wiki/Uplug/Config.wiki
+doc/wiki/Uplug/IO.wiki
+doc/wiki/Uplug/IO/Any.wiki
 example/1988de.txt
 example/1988en.txt
 example/1988fr.txt
@@ -98,7 +104,6 @@ opt/align_osx/align2.c
 opt/align_osx/readme.txt
 opt/giza-pp-v1.0.7.tar.gz
 opt/hunalign-1.1.tgz
-print_shared
 QUICKSTART
 README
 share/bin/Darwin/align2
@@ -2165,7 +2170,6 @@ t/data/txt/1988sv.txt
 t/data/xml/1988de.basic.xml
 t/data/xml/1988de.hunpos.xml
 t/data/xml/1988en.basic.xml
-t/data/xml/1988en.basic.xml.idx
 t/data/xml/1988en.chunk.xml
 t/data/xml/1988en.grok.xml
 t/data/xml/1988en.hunpos.xml
@@ -2174,7 +2178,6 @@ t/data/xml/1988en.sent.xml
 t/data/xml/1988en.tok.xml
 t/data/xml/1988fr.basic.xml
 t/data/xml/1988sv.basic.xml
-t/data/xml/1988sv.basic.xml.idx
 t/data/xml/1988sv.grok.xml
 t/data/xml/1988sv.hunpos.xml
 t/data/xml/de-en/1988.bisent.xml
@@ -2182,6 +2185,7 @@ t/data/xml/de-en/1988.gma.xml
 t/data/xml/de-en/1988.hun.xml
 t/data/xml/de-en/1988.sent.xml
 t/data/xml/sv-en/1988.wa.basic.xml
+t/translate.txt
 tools/opus2moses.pl
 tools/phrase2dice.pl
 tools/projects/ETAP/0000readme
